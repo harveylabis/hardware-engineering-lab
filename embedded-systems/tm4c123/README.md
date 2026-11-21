@@ -106,3 +106,4 @@ Each week's note will capture measured results and deviations from expected beha
 - [Lesson 3 — Set and clear selected bits](lesson-03-set-and-clear-bits.md)
 - [Lesson 4 — Turn on the red LED](lesson-04-gpio-red-led.md)
 - [Lesson 5 — Read a GPIO button](lesson-05-gpio-button.md)
+- [Lesson 6 — Control the red LED with SW1](lesson-06-button-controls-led.md)

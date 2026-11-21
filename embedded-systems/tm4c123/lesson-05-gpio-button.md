@@ -473,4 +473,4 @@ Complete these without running the code:
 
 ## Next lesson
 
-Next, we will control the red LED with SW1 or move to GPIO interrupts.
+Next, use [Lesson 6](lesson-06-button-controls-led.md) to control the red LED with SW1.
