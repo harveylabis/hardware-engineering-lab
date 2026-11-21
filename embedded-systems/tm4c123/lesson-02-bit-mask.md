@@ -97,6 +97,75 @@ For the TM4C123GH6PM, the data sheet names DID0's lowest 8 bits `MINOR`. So `low
 2. How many bits does `0xFF` keep?
 3. Did this code write to the `DID0` register?
 
+## Exercises
+
+### Exercise 1 — Mask the lowest 8 bits
+
+**Goal:** Keep only the lowest 8 bits of `0xABCD1234`.
+
+**Solution:**
+
+```c
+uint32_t value = 0xABCD1234u;
+uint32_t low_byte = value & 0xFFu;
+```
+
+The result is `0x34`.
+
+### Exercise 2 — Extract bits 15:8
+
+**Goal:** Keep only bits 15:8.
+
+**Solution:**
+
+```c
+uint32_t value = 0xABCD1234u;
+uint32_t middle_byte = (value >> 8) & 0xFFu;
+```
+
+The result is `0x12`.
+
+### Exercise 3 — Extract bits 23:16
+
+**Goal:** Read the byte in bits 23:16.
+
+**Solution:**
+
+```c
+uint32_t value = 0xABCD1234u;
+uint32_t upper_middle = (value >> 16) & 0xFFu;
+```
+
+The result is `0xCD`.
+
+### Exercise 4 — Extract the high byte
+
+**Goal:** Extract the highest 8 bits.
+
+**Solution:**
+
+```c
+uint32_t value = 0xABCD1234u;
+uint32_t high_byte = (value >> 24) & 0xFFu;
+```
+
+The result is `0xAB`.
+
+### Exercise 5 — Decode the DID0 MINOR field
+
+**Goal:** Extract DID0's lowest 8 bits.
+
+**Solution:**
+
+```c
+#define SYSCTL_DID0_R (*((volatile const uint32_t *)0x400FE000u))
+
+uint32_t device_id = SYSCTL_DID0_R;
+uint32_t minor_revision = device_id & 0xFFu;
+```
+
+For `0x18050102`, `minor_revision` is `0x02`.
+
 ## Next lesson
 
 Next, we will use a mask to change selected bits in a value. Then we will use the same idea to control an LED.

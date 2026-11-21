@@ -106,6 +106,73 @@ CCS may show decimal values. For example, `0x05` is decimal `5`.
 2. Which expression clears a selected bit?
 3. Why does clearing bit 0 leave bit 2 unchanged?
 
+## Exercises
+
+### Exercise 1 — Set a bit
+
+**Goal:** Set bit 3 in `state = 0x01`.
+
+**Solution:**
+
+```c
+uint32_t state = 0x01u;
+state |= (1u << 3);
+```
+
+The result is `0x09`.
+
+### Exercise 2 — Clear a bit
+
+**Goal:** Clear bit 2 from `state = 0x05`.
+
+**Solution:**
+
+```c
+uint32_t state = 0x05u;
+state &= ~(1u << 2);
+```
+
+The result is `0x01`.
+
+### Exercise 3 — Toggle a bit
+
+**Goal:** Toggle bit 1 in `state = 0x05`.
+
+**Solution:**
+
+```c
+uint32_t state = 0x05u;
+state ^= (1u << 1);
+```
+
+The result is `0x07`.
+
+### Exercise 4 — Set two bits
+
+**Goal:** Set bits 1 and 3 in `state = 0x00`.
+
+**Solution:**
+
+```c
+uint32_t state = 0x00u;
+state |= (1u << 1) | (1u << 3);
+```
+
+The result is `0x0A`.
+
+### Exercise 5 — Preserve unselected bits
+
+**Goal:** Clear bit 0 while preserving all other bits in `state = 0xA5`.
+
+**Solution:**
+
+```c
+uint32_t state = 0xA5u;
+state &= ~(1u << 0);
+```
+
+The result is `0xA4`.
+
 ## Next lesson
 
-Next, we will use these operations on a GPIO register to control the LaunchPad's RGB LED.
+Next, we will use these operations on a GPIO register to control the LaunchPad's RGB LED in [Lesson 4](lesson-04-gpio-red-led.md).

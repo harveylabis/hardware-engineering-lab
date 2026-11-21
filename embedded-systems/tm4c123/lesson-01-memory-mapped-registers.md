@@ -18,6 +18,22 @@ The `DID0` register tells us about the chip. Its address is **`0x400FE000`**. It
 
 When C reads this address, the chip returns the register's value. This is called **memory-mapped I/O**.
 
+## How this address was obtained
+
+System Control uses base address `0x400FE000`.
+
+`DID0` is register 1 at offset `0x000` in the System Control register table:
+
+```text
+0x400FE000 + 0x000 = 0x400FE000
+```
+
+The offset is zero for the first register, so the base and final address are the same.
+
+| Register | Address | Address calculation | What we do |
+|---|---:|---|---|
+| `SYSCTL_DID0_R` | `0x400FE000` | `0x400FE000 + 0x000` | Read the device identification value |
+
 ## Look before you run
 
 What do you think this code reads: a regular C variable, or the hardware at `0x400FE000`?
@@ -116,6 +132,68 @@ The value should match when viewed as `device_id` and at address `0x400FE000`. R
 - **Build fails:** copy the first error from the Console and send it to me.
 - **Debugger cannot connect:** check that the board is plugged into the ICDI USB connector. Then send me the CCS error.
 - **Value is missing:** tell me which CCS view you are using. We can inspect it together.
+
+## Exercises
+
+### Exercise 1 — Read DID0
+
+**Goal:** Store the 32-bit DID0 value in `device_id`.
+
+**Solution:**
+
+```c
+#define SYSCTL_DID0_R (*((volatile const uint32_t *)0x400FE000u))
+
+volatile uint32_t device_id = SYSCTL_DID0_R;
+```
+
+### Exercise 2 — Calculate the address
+
+**Goal:** Verify that `DID0` uses offset `0x000`.
+
+**Solution:**
+
+```text
+System Control base = 0x400FE000
+DID0 offset = 0x000
+0x400FE000 + 0x000 = 0x400FE000
+```
+
+### Exercise 3 — Explain pointer width
+
+**Goal:** Explain why this code uses `uint32_t`.
+
+**Solution:**
+
+`DID0` is a 32-bit register. `uint32_t` makes the pointer access exactly 32 bits.
+
+```c
+(volatile const uint32_t *)0x400FE000u
+```
+
+### Exercise 4 — Replace DID0 with a local variable
+
+**Goal:** Show what happens when a normal C variable is used.
+
+**Solution:**
+
+```c
+volatile uint32_t device_id;
+
+device_id = 0x18050102u;
+```
+
+This does not read hardware. The first value in this solution is an example, not a chip-specific result.
+
+### Exercise 5 — Compare macro and variable views
+
+**Goal:** Explain why `SYSCTL_DID0_R` may not appear in CCS Watch.
+
+**Solution:**
+
+`SYSCTL_DID0_R` is a macro. The compiler replaces it with `*((volatile const uint32_t *)0x400FE000u)` before debugging.
+
+Watch `device_id` for the stored result and open the Memory Browser at `0x400FE000` for the hardware register.
 
 ## Next lesson
 

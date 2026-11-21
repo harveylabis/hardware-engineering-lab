@@ -4,10 +4,67 @@ This course uses the EK-TM4C123GXL LaunchPad and C. We will learn direct registe
 
 Lessons will use short sentences and one main goal. Each will include a small code example, click-by-click CCS steps, a prediction, a hands-on task, and a short check. We will take the time needed to understand each idea before moving on.
 
+## Exercise format
+
+Every lesson must contain at least five exercises. Each exercise must:
+
+- Extend the main lesson instead of repeating the main demonstration.
+- Have a clear, separate **Goal**.
+- Have a complete **Solution**.
+- Include a measurable CCS, hardware, or debugger check when possible.
+- Use direct register or architecture concepts covered by that lesson.
+- Keep any device or confidential information out of the exercise.
+
+Use this structure:
+
+~~~markdown
+### Exercise 1 — Name
+
+**Goal:** State what the learner must practice.
+
+**Solution:**
+
+```c
+/* Solution code */
+```
+
+**Check:** State what to observe in CCS or on the hardware.
+~~~
+
 The device and board references already in this folder are:
 
 - [TM4C123GH6PM data sheet](./tm4c123gh6pm.pdf)
 - [EK-TM4C123GXL LaunchPad user's guide](./spmu296.pdf)
+
+## How register addresses are written
+
+Most addresses are calculated as:
+
+```text
+peripheral base address + register offset
+```
+
+The base address and offset both come from the TM4C123GH6PM data sheet. The offset is in bytes.
+
+For example:
+
+```text
+Port F APB base  = 0x40025000
+GPIODIR offset   = 0x400
+PF direction     = 0x40025000 + 0x400 = 0x40025400
+```
+
+GPIO `GPIODATA` has address aliases. For one or more selected pins:
+
+```text
+alias address = GPIO base + (pin mask << 2)
+```
+
+For PF1, the pin mask is `0x02`, so `0x02 << 2 = 0x08`:
+
+```text
+0x40025000 + 0x08 = 0x40025008
+```
 
 ## Starting point
 
@@ -47,3 +104,5 @@ Each week's note will capture measured results and deviations from expected beha
 - [Lesson 1 — Embedded C and memory-mapped registers](lesson-01-memory-mapped-registers.md)
 - [Lesson 2 — Keep part of a value](lesson-02-bit-mask.md)
 - [Lesson 3 — Set and clear selected bits](lesson-03-set-and-clear-bits.md)
+- [Lesson 4 — Turn on the red LED](lesson-04-gpio-red-led.md)
+- [Lesson 5 — Read a GPIO button](lesson-05-gpio-button.md)
