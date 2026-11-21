@@ -32,14 +32,19 @@ Predict:
 |---|---:|---|---|
 | `SYSCTL_RCGCGPIO` | `0x400FE608` | `0x400FE000 + 0x608` | Set bit 5 to enable Port F |
 | `SYSCTL_PRGPIO` | `0x400FEA08` | `0x400FE000 + 0xA08` | Wait until Port F is ready |
+| `GPIO_PORTF_LOCK` | `0x40025520` | `0x40025000 + 0x520` | Unlock protected PF0 before using SW2 |
+| `GPIO_PORTF_CR` | `0x40025524` | `0x40025000 + 0x524` | Commit PF0 so its GPIO settings can be changed |
 | `GPIO_PORTF_AFSEL` | `0x40025420` | `0x40025000 + 0x420` | Clear PF4 to select regular GPIO |
 | `GPIO_PORTF_DIR` | `0x40025400` | `0x40025000 + 0x400` | Clear PF4 to make PF4 an input |
 | `GPIO_PORTF_PUR` | `0x40025510` | `0x40025000 + 0x510` | Set PF4 to enable its pull-up |
 | `GPIO_PORTF_DEN` | `0x4002551C` | `0x40025000 + 0x51C` | Set PF4 to enable digital input |
 | `GPIO_PORTF_AMSEL` | `0x40025528` | `0x40025000 + 0x528` | Clear PF4 to disable analog mode |
 | `GPIO_PORTF_DATA` | `0x40025040` | `0x40025000 + (0x10 << 2)` | Read PF4 through a PF4-only address |
+| `GPIO_PORTF_DATA` | `0x40025004` | `0x40025000 + (0x01 << 2)` | Read PF0 (SW2) through a PF0-only address |
 
 PF4 is bit 4. The DATA address `0x40025040` uses the Port F base plus the PF4 address mask.
+
+SW2 uses PF0. PF0 is protected because it can also be the NMI input. Before configuring PF0, enable and wait for the Port F clock, then unlock and commit PF0. Do not access the Port F registers before the peripheral is ready.
 
 ## How these addresses were obtained
 
@@ -61,6 +66,12 @@ GPIODEN offset = 0x51C
 
 GPIOAMSEL offset = 0x528
 0x40025000 + 0x528 = 0x40025528
+
+GPIOLOCK offset = 0x520
+0x40025000 + 0x520 = 0x40025520
+
+GPIOCR offset = 0x524
+0x40025000 + 0x524 = 0x40025524
 ```
 
 The clock addresses use the System Control base:
@@ -251,15 +262,35 @@ uint32_t sw1_pressed =
 
 This is an extension: first read the hardware mask, then change it into application logic.
 
-### Exercise 2 — Count each button's state
+### Exercise 2 — Read each button's state
 
 **Goal:** Read both SW1 and SW2 without changing them to a value in GPIO bit position.
 
 **Solution:**
 
+After the Port F clock-ready loop, unlock and commit PF0 before configuring it:
+
 ```c
 #define SW1 (1u << 4)
 #define SW2 (1u << 0)
+#define GPIO_LOCK_KEY 0x4C4F434Bu
+
+#define GPIO_PORTF_LOCK_R (*((volatile uint32_t *)0x40025520u))
+#define GPIO_PORTF_CR_R   (*((volatile uint32_t *)0x40025524u))
+
+GPIO_PORTF_LOCK_R = GPIO_LOCK_KEY;
+GPIO_PORTF_CR_R |= SW2;
+
+GPIO_PORTF_AFSEL_R &= ~SW2;
+GPIO_PORTF_AMSEL_R &= ~SW2;
+GPIO_PORTF_DIR_R &= ~SW2;
+GPIO_PORTF_PUR_R |= SW2;
+GPIO_PORTF_DEN_R |= SW2;
+```
+
+Now define the masked data addresses and read the buttons:
+
+```c
 
 #define GPIO_PORTF_SW1_DATA_R \
     (*((volatile uint32_t *)0x40025040u))
@@ -273,6 +304,8 @@ uint32_t sw1_pressed =
 uint32_t sw2_pressed =
     ((GPIO_PORTF_SW2_DATA_R & SW2) == 0u) ? 1u : 0u;
 ```
+
+The unlock must happen after Port F's peripheral-ready check. Otherwise, a register access can cause a BusFault and enter `FaultISR`.
 
 Expected combinations:
 
@@ -352,6 +385,81 @@ while (1)
 ```
 
 This combines both button masks into a small state variable. Bit 4 represents SW1 and bit 0 represents SW2.
+
+The LaunchPad buttons are **active-low**:
+
+| Button | Raw GPIO value | Ternary result |
+|---|---:|---:|
+| SW1 released | `0x10` | `0x00` |
+| SW1 pressed | `0x00` | `0x10` |
+| SW2 released | `0x01` | `0x00` |
+| SW2 pressed | `0x00` | `0x01` |
+
+So the ternary does more than copy the `GPIODATA` value. It changes the sense of the signal: a pressed button becomes a set bit in `current`. The `0x10` and `0x01` results are the same bit masks as PF4 and PF0, but they are returned when the raw pin reads low.
+
+You could combine the raw readings directly:
+
+```c
+uint32_t raw_buttons =
+    (GPIO_PORTF_SW1_DATA_R & SW1) |
+    (GPIO_PORTF_SW2_DATA_R & SW2);
+```
+
+Yes, you can compare that raw snapshot with the previous one. Initialize `previous` after configuring the pins so the first loop does not report a fake change:
+
+```c
+uint32_t previous =
+    GPIO_PORTF_SW1_DATA_R | GPIO_PORTF_SW2_DATA_R;
+
+while (1)
+{
+    uint32_t current =
+        GPIO_PORTF_SW1_DATA_R | GPIO_PORTF_SW2_DATA_R;
+
+    uint32_t changed = current ^ previous;
+
+    if (changed != 0u)
+    {
+        button_state = changed;
+        previous = current;
+    }
+}
+```
+
+`current != previous` would also tell you whether any button changed. XOR gives you a mask identifying which bit changed:
+
+```text
+changed & SW1 is nonzero -> SW1 changed
+changed & SW2 is nonzero -> SW2 changed
+```
+
+With raw values, a `1` means released and a `0` means pressed. For example, both released is `0x11`; pressing SW1 changes the snapshot to `0x01`.
+
+The program must test the `changed` mask to name the button:
+
+```c
+if ((changed & SW1) != 0u)
+{
+    /* SW1 changed */
+}
+
+if ((changed & SW2) != 0u)
+{
+    /* SW2 changed */
+}
+```
+
+Example: if `changed` is `0x10`, then `changed & SW1` is nonzero and `changed & SW2` is zero. That tells us PF4/SW1 changed. If `changed` is `0x01`, PF0/SW2 changed. The `button_state = changed;` assignment only saves the mask; it does not name the button by itself.
+
+If you want a pressed-button mask instead, invert each masked input:
+
+```c
+uint32_t current =
+    (~GPIO_PORTF_SW1_DATA_R & SW1) |
+    (~GPIO_PORTF_SW2_DATA_R & SW2);
+```
+
+The `& SW1` and `& SW2` masks keep only the relevant pin bits after inversion. For a beginner, the ternary version makes the active-low conversion easier to see.
 
 ### Short challenges
 
