@@ -297,6 +297,12 @@ GPIO_PORTF_ICR_R = SW1 | SW2;    // Clear both flags
 
 Avoid `|=` and `&=` here. They perform read-modify-write operations, which are not the right way to acknowledge W1C flags. Check the datasheet register type and write description before choosing an operation; ordinary read/write registers and W1C registers follow different rules.
 
+### Is this interrupt model the same on Cortex-M3 and Cortex-M33?
+
+**Question:** Do GPIO interrupts work the same way on Cortex-M3 or Cortex-M33?
+
+**Answer:** The core concepts are similar: an interrupt becomes pending, the NVIC prioritizes it, the vector table points to a handler, and the CPU enters and returns from that handler. But GPIO configuration registers, interrupt numbers, startup files, and some core features are specific to the microcontroller and Cortex-M version. Cortex-M33 also has optional security features such as TrustZone. The TM4C123 register addresses and Port F IRQ number apply only to this TM4C123 device; use the other chip's reference manual and startup code when working with it.
+
 ## Exercises
 
 ### Exercise 1 — Count without toggling

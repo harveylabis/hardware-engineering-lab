@@ -4,6 +4,8 @@ This course uses the EK-TM4C123GXL LaunchPad and C. We will learn direct registe
 
 Lessons will use short sentences and one main goal. Each will include a small code example, click-by-click CCS steps, a prediction, a hands-on task, and a short check. We will take the time needed to understand each idea before moving on.
 
+The goal is to learn transferable concepts, not memorize one chip's register names. We will use the TM4C123 as a concrete example, then identify which ideas carry over and which details must be checked in another device's reference manual.
+
 ## Exercise format
 
 Every lesson must contain at least five exercises. Each exercise must:
@@ -109,3 +111,4 @@ Embedded C topics already introduced—pointers, bitwise operations, `volatile`,
 - [Lesson 5 — Read a GPIO button](lesson-05-gpio-button.md)
 - [Lesson 6 — Control the red LED with SW1](lesson-06-button-controls-led.md)
 - [Lesson 7 — Respond to a GPIO interrupt](lesson-07-gpio-interrupts.md)
+- [Lesson 8 — Meet the Cortex-M4 registers](lesson-08-cortex-m4-registers.md)
