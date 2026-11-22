@@ -78,26 +78,27 @@ The computer is an Apple Silicon Mac with Homebrew, VS Code, and **TI Code Compo
 
 The local application, device files, and USB enumeration are promising, but do not yet prove that CCS can halt and debug the MCU reliably on this Mac. Before calling the setup complete, use CCS to connect, halt, read `DID0`, and resume. Do not install the separate GNU toolchain or OpenOCD unless CCS cannot complete that test. If the supplied USB-A cable cannot connect to the Mac, use a USB-C data adapter or cable.
 
-## Weekly plan
+## Flexible lesson roadmap
 
-Plan on one focused lesson each week. We can slow down or repeat a week whenever needed.
+Plan on one focused lesson each week, but the pace is flexible. We can repeat a topic or split a dense topic into smaller lessons. Lessons 1–6 are complete; Lesson 7, GPIO interrupts, is in progress. This roadmap is a checklist, not a deadline.
 
-| Week | Focus | Evidence of learning |
+| Sequence | Focus | Topics and evidence of learning |
 |---|---|---|
-| 1 | Embedded C, memory addresses, and memory-mapped registers | Read a documented read-only register in the debugger and explain the access |
-| 2 | Pointers, bitwise operations, `volatile`, and C integer types | Decode and update selected bit fields without disturbing unrelated bits |
-| 3 | Flash, SRAM, stack, static storage, startup code, and linker map | Locate code and variables in the memory map |
-| 4 | Cortex-M4 registers, Thumb-2, reset/vector table, exceptions, NVIC | Trace reset into `main` and inspect core state at a breakpoint |
-| 5 | GPIO clock gating, digital enable, direction, data, and onboard LED | Configure and control the RGB LED using direct register access |
-| 6 | GPIO input, pull resistors, pin mux, and GPIO interrupts | Read buttons and respond to an edge-triggered interrupt |
-| 7 | SysTick and general-purpose timers | Generate a measured periodic event and inspect interrupt behavior |
-| 8 | UART | Send and receive a simple command over a serial terminal |
-| 9 | SSI/SPI and I2C | Read a peripheral and verify bus transactions with the ADALM2000 where suitable |
-| 10 | ADC and PWM | Sample a signal and generate a measured PWM waveform |
-| 11 | Watchdog, uDMA, and low-power modes | Explain when each is useful and implement a bounded, observable experiment |
-| 12 | Integrating project | Build a timer-triggered acquisition path with a UART interface and Python visualization |
+| Lessons 1–6 | Embedded C and GPIO foundations — complete | Memory-mapped registers, addresses, masks, `volatile`, GPIO output and input, active-low buttons, polling, and button-driven LED behavior |
+| Lesson 7 | GPIO interrupts — in progress | Edge detection, GPIO interrupt flags, NVIC enable, vector-table handler, and a button-triggered LED action |
+| Lessons 8–10 | Cortex-M4 and memory | R0–R15, SP/LR/PC, exception entry and return, Thumb-2 basics, memory map, Flash/SRAM, static/stack/heap storage, reset sequence, vector table, startup code, and linker map |
+| Lesson 11 | NVIC and interrupt behavior | Pending and enable state, priorities, nesting, global masking, and interrupt latency; explain and measure when practical |
+| Lesson 12 | GPIO details and debouncing | Pin multiplexing, pull-up and pull-down resistors, protected pins, and a timed switch-debounce method |
+| Lessons 13–14 | SysTick and general-purpose timers | Periodic and one-shot timing, timer interrupts, input capture, output compare, and timing measurements |
+| Lesson 15 | UART | Send and receive data, then build a small command interface and inspect serial traffic |
+| Lesson 16 | SSI/SPI | Connect to a peripheral and inspect clock/data signals with a logic analyzer or suitable ADALM2000 setup |
+| Lesson 17 | I2C | Read and write a peripheral and inspect bus transactions |
+| Lesson 18 | ADC | Configure a conversion, sample a signal, and compare measured values with expected results |
+| Lesson 19 | PWM | Generate and measure a PWM output; relate timer settings to frequency and duty cycle |
+| Lessons 20–22 | Watchdog, uDMA, and low-power modes | Learn what each feature does and complete small, observable experiments |
+| Project lessons | Integration | Build a sensor acquisition system, a UART command interface, an SPI/I2C sensor interface, timer-triggered ADC acquisition, and a multichannel monitor with Python visualization |
 
-Each week's note will capture measured results and deviations from expected behavior. The final project can be expanded after the fundamentals are solid.
+Embedded C topics already introduced—pointers, bitwise operations, `volatile`, and integer types—will be revisited where useful. The memory lessons will make Flash, SRAM, and static/stack/heap storage explicit. Each project will include its goal, connections, source, expected and actual measurements, debugging notes, and lessons learned.
 
 ## Lessons
 
@@ -107,3 +108,4 @@ Each week's note will capture measured results and deviations from expected beha
 - [Lesson 4 — Turn on the red LED](lesson-04-gpio-red-led.md)
 - [Lesson 5 — Read a GPIO button](lesson-05-gpio-button.md)
 - [Lesson 6 — Control the red LED with SW1](lesson-06-button-controls-led.md)
+- [Lesson 7 — Respond to a GPIO interrupt](lesson-07-gpio-interrupts.md)

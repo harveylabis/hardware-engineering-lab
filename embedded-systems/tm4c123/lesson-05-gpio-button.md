@@ -46,6 +46,12 @@ PF4 is bit 4. The DATA address `0x40025040` uses the Port F base plus the PF4 ad
 
 SW2 uses PF0. PF0 is protected because it can also be the NMI input. Before configuring PF0, enable and wait for the Port F clock, then unlock and commit PF0. Do not access the Port F registers before the peripheral is ready.
 
+## Which GPIO pins are protected?
+
+See Chapter 10, **Table 10-7, “GPIO Pins With Special Considerations,” on printed page 671** of the TM4C123GH6PM data sheet. It identifies `PC[3:0]` as JTAG/SWD pins and `PD[7]` and `PF[0]` as NMI-capable pins. These pins have their `GPIOCR` commit bits cleared by default and are protected from accidental reconfiguration. The table footnote specifically explains that `PD7` and `PF0` are locked until unlocked and committed.
+
+The register descriptions explain the procedure: `GPIOLOCK` is on printed page 684, and `GPIOCR` is on printed page 685. Write the unlock key to `GPIOLOCK`, then set the relevant pin bit in `GPIOCR` before changing the pin configuration. For SW2, that pin is PF0, so its mask is `1u << 0`.
+
 ## How these addresses were obtained
 
 Use the Port F APB base and each register offset:
