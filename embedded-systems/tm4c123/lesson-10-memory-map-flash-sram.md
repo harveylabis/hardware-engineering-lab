@@ -80,6 +80,21 @@ We will leave the actual EEPROM/Flash programming exercise for later.
 
 **Answer:** No. Cortex-M describes the processor core, not the chip's memory or peripheral selection. The silicon vendor and specific MCU determine whether it has internal EEPROM, Flash only, or another type of nonvolatile memory. This TM4C123GH6PM has 2 KB of internal EEPROM. A design without internal EEPROM can sometimes use a reserved Flash area or an external EEPROM connected over a bus such as I2C or SPI.
 
+### Does “peripheral” include an AFE?
+
+**Question:** In a product with an AFE and a Cortex-M MCU, are AFE blocks such as ADC, IDAC, or VDAC peripherals?
+
+**Answer:** They are peripheral functions, but the memory map depends on how the AFE is built into the product:
+
+- If the AFE is integrated on the same chip as the MCU, its control and status registers may appear in that chip's peripheral address map.
+- If the AFE is a separate chip, its registers are not part of the MCU's internal memory map. The MCU communicates with it through an interface such as SPI, I2C, or dedicated pins.
+
+The Cortex-M core does not specify which peripherals exist. Check the chip's block diagram and register map to see which modules are integrated and how software accesses them. Peripherals can be digital or analog; GPIO, timers, UART, ADC, and analog-output blocks are all examples of peripheral functions.
+
+If the AFE is a standalone chip with no CPU, do not assume it has the MCU's Flash/SRAM address map. It may have configuration and status registers, data buffers, calibration storage, or other internal memory, depending on the design. Its data sheet explains what is present.
+
+When an external controller accesses an AFE over SPI or I2C, the AFE's register addresses are usually addresses in that communication protocol. They are not automatically addresses in the controller MCU's memory map. The MCU's SPI/I2C peripheral is in the MCU memory map; the AFE register address is sent over the bus.
+
 ## Your CCS check
 
 Use your existing Lesson 9 debug project:

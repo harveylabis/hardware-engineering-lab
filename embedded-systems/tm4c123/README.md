@@ -80,27 +80,23 @@ The computer is an Apple Silicon Mac with Homebrew, VS Code, and **TI Code Compo
 
 The local application, device files, and USB enumeration are promising, but do not yet prove that CCS can halt and debug the MCU reliably on this Mac. Before calling the setup complete, use CCS to connect, halt, read `DID0`, and resume. Do not install the separate GNU toolchain or OpenOCD unless CCS cannot complete that test. If the supplied USB-A cable cannot connect to the Mac, use a USB-C data adapter or cable.
 
-## Flexible lesson roadmap
+## Flexible, prioritized lesson roadmap
 
-Plan on one focused lesson each week, but the pace is flexible. We can repeat a topic or split a dense topic into smaller lessons. Lessons 1–6 are complete; Lesson 7, GPIO interrupts, is in progress. This roadmap is a checklist, not a deadline.
+Plan on one focused lesson each week, but the pace and order are flexible. We can repeat a topic or split a dense topic into smaller lessons. Lessons 1–7 are complete; Lessons 8–10 are in progress. This roadmap is a checklist, not a deadline.
 
-| Sequence | Focus | Topics and evidence of learning |
+| Priority | Focus | Topics and evidence of learning |
 |---|---|---|
-| Lessons 1–6 | Embedded C and GPIO foundations — complete | Memory-mapped registers, addresses, masks, `volatile`, GPIO output and input, active-low buttons, polling, and button-driven LED behavior |
-| Lesson 7 | GPIO interrupts — in progress | Edge detection, GPIO interrupt flags, NVIC enable, vector-table handler, and a button-triggered LED action |
-| Lessons 8–10 | Cortex-M4 and memory | R0–R15, SP/LR/PC, exception entry and return, Thumb-2 basics, memory map, Flash/SRAM, static/stack/heap storage, reset sequence, vector table, startup code, and linker map |
-| Lesson 11 | NVIC and interrupt behavior | Pending and enable state, priorities, nesting, global masking, and interrupt latency; explain and measure when practical |
-| Lesson 12 | GPIO details and debouncing | Pin multiplexing, pull-up and pull-down resistors, protected pins, and a timed switch-debounce method |
-| Lessons 13–14 | SysTick and general-purpose timers | Periodic and one-shot timing, timer interrupts, input capture, output compare, and timing measurements |
-| Lesson 15 | UART | Send and receive data, then build a small command interface and inspect serial traffic |
-| Lesson 16 | SSI/SPI | Connect to a peripheral and inspect clock/data signals with a logic analyzer or suitable ADALM2000 setup |
-| Lesson 17 | I2C | Read and write a peripheral and inspect bus transactions |
-| Lesson 18 | ADC | Configure a conversion, sample a signal, and compare measured values with expected results |
-| Lesson 19 | PWM | Generate and measure a PWM output; relate timer settings to frequency and duty cycle |
-| Lessons 20–22 | Watchdog, uDMA, and low-power modes | Learn what each feature does and complete small, observable experiments |
+| Current | Cortex-M4 and memory foundations | Core registers, the basic interrupt path, memory map, Flash/SRAM, and how startup code and the linker place code and data |
+| Before timers | Clock and interrupt essentials | Learn the system/peripheral clock rate and clock gating needed to calculate timer periods. Review only the NVIC enable, pending, and peripheral-flag steps needed for an interrupt-driven timer. Deep priority and nesting details can wait. |
+| 1 | SysTick and general-purpose timers | Generate periodic events, calculate timing from the clock, use timer interrupts, then study input capture and output compare |
+| 2 | Watchdog and uDMA | Configure a watchdog timeout and observe reset behavior; then move data between a peripheral and SRAM using uDMA |
+| 3 | GPIO details and debouncing | Pin multiplexing, pull-up and pull-down resistors, protected pins, and switch debounce; pin multiplexing prepares for communication peripherals |
+| 4 | Communication peripherals | UART, then SSI/SPI (moved earlier within this group because it is relevant to your AFE work), then I2C; inspect transactions where suitable |
+| 5 | Analog outputs and acquisition | ADC sampling and PWM generation; relate settings to measurements |
+| Later foundations | Deeper Cortex-M and interrupt topics | Thumb-2, reset/vector details, exception entry/return, NVIC priorities/nesting, and interrupt latency when they become useful |
 | Project lessons | Integration | Build a sensor acquisition system, a UART command interface, an SPI/I2C sensor interface, timer-triggered ADC acquisition, and a multichannel monitor with Python visualization |
 
-Embedded C topics already introduced—pointers, bitwise operations, `volatile`, and integer types—will be revisited where useful. The memory lessons will make Flash, SRAM, and static/stack/heap storage explicit. Each project will include its goal, connections, source, expected and actual measurements, debugging notes, and lessons learned.
+Embedded C topics already introduced—pointers, bitwise operations, `volatile`, and integer types—will be revisited where useful. For uDMA, we will review SRAM addresses, buffers, and alignment before configuring transfers. Each project will include its goal, connections, source, expected and actual measurements, debugging notes, and lessons learned.
 
 ## Lessons
 
@@ -114,3 +110,4 @@ Embedded C topics already introduced—pointers, bitwise operations, `volatile`,
 - [Lesson 8 — Meet the Cortex-M4 registers](lesson-08-cortex-m4-registers.md)
 - [Lesson 9 — What the CPU does when an interrupt arrives](lesson-09-exception-entry-and-stack.md)
 - [Lesson 10 — The memory map: Flash and SRAM](lesson-10-memory-map-flash-sram.md)
+- [Lesson 11 — How startup code and the linker place code and data](lesson-11-startup-linker-memory-placement.md)
