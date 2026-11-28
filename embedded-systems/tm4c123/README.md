@@ -112,3 +112,5 @@ Embedded C topics already introduced—pointers, bitwise operations, `volatile`,
 - [Lesson 6 — Control the red LED with SW1](lesson-06-button-controls-led.md)
 - [Lesson 7 — Respond to a GPIO interrupt](lesson-07-gpio-interrupts.md)
 - [Lesson 8 — Meet the Cortex-M4 registers](lesson-08-cortex-m4-registers.md)
+- [Lesson 9 — What the CPU does when an interrupt arrives](lesson-09-exception-entry-and-stack.md)
+- [Lesson 10 — The memory map: Flash and SRAM](lesson-10-memory-map-flash-sram.md)
